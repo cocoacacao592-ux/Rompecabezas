@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Rompecabezas</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: Arial, sans-serif;
+  background: #f1e6ff;
+  color: #24152f;
+}
+
+.contenedor {
+  width: min(92vw, 430px);
+  padding: 22px;
+  text-align: center;
+  background: white;
+  border-radius: 22px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+}
+
+h1 {
+  margin-top: 0;
+}
+
+#tablero {
+  width: min(84vw, 360px);
+  aspect-ratio: 1;
+  margin: 20px auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  padding: 4px;
+  background: #24152f;
+  border-radius: 14px;
+}
+
+.pieza {
+  border: none;
+  border-radius: 7px;
+  cursor: pointer;
+  background-image: url("https://dummyimage.com/900x900/9b59b6/ffffff&text=TU+IMAGEN");
+  background-size: 300% 300%;
+}
+
+.vacio {
+  background: #e7dcef;
+  cursor: default;
+}
+
+button {
+  padding: 11px 18px;
+  margin: 4px;
+  border: none;
+  border-radius: 12px;
+  background: #7b3fb6;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+#mensaje {
+  min-height: 25px;
+  font-weight: bold;
+}
+</style>
+</head>
+
+<body>
+
+<div class="contenedor">
+
+<h1>🧩 Rompecabezas</h1>
+
+<p>Ordena las piezas para completar la imagen.</p>
+
+<div id="tablero"></div>
+
+<button onclick="mezclar()">🔀 Mezclar</button>
+
+<button onclick="nuevoJuego()">🔄 Nuevo juego</button>
+
+<p>
+Movimientos: <span id="movimientos">0</span>
+</p>
+
+<div id="mensaje"></div>
+
+</div>
+
+<script>
+
+const tablero = document.getElementById("tablero");
+
+let piezas = [
+  0, 1, 2,
+  3, 4, 5,
+  6, 7, 8
+];
+
+let movimientos = 0;
+
+function mostrarTablero() {
+
+  tablero.innerHTML = "";
+
+  piezas.forEach((pieza, posicion) => {
+
+    const boton = document.createElement("button");
+
+    boton.className = "pieza";
+
+    if (pieza === 8) {
+
+      boton.classList.add("vacio");
+
+    } else {
+
+      const fila = Math.floor(pieza / 3);
+      const columna = pieza % 3;
+
+      boton.style.backgroundPosition =
+        `${columna * 50}% ${fila * 50}%`;
+    }
+
+    boton.onclick = () => mover(posicion);
+
+    tablero.appendChild(boton);
+  });
+
+  document.getElementById("movimientos").textContent =
+    movimientos;
+}
+
+
+function mover(posicion) {
+
+  const vacio = piezas.indexOf(8);
+
+  const fila1 = Math.floor(posicion / 3);
+  const columna1 = posicion % 3;
+
+  const fila2 = Math.floor(vacio / 3);
+  const columna2 = vacio % 3;
+
+  const distancia =
+    Math.abs(fila1 - fila2) +
+    Math.abs(columna1 - columna2);
+
+  if (distancia !== 1) {
+    return;
+  }
+
+  [piezas[posicion], piezas[vacio]] =
+  [piezas[vacio], piezas[posicion]];
+
+  movimientos++;
+
+  mostrarTablero();
+
+  comprobarVictoria();
+}
+
+
+function mezclar() {
+
+  for (let i = 0; i < 100; i++) {
+
+    const vacio = piezas.indexOf(8);
+
+    const opciones = [];
+
+    const fila = Math.floor(vacio / 3);
+    const columna = vacio % 3;
+
+    if (fila > 0)
+      opciones.push(vacio - 3);
+
+    if (fila < 2)
+      opciones.push(vacio + 3);
+
+    if (columna > 0)
+      opciones.push(vacio - 1);
+
+    if (columna < 2)
+      opciones.push(vacio + 1);
+
+    const elegido =
+      opciones[Math.floor(Math.random() * opciones.length)];
+
+    [piezas[vacio], piezas[elegido]] =
+    [piezas[elegido], piezas[vacio]];
+  }
+
+  movimientos = 0;
+
+  document.getElementById("mensaje").textContent = "";
+
+  mostrarTablero();
+}
+
+
+function comprobarVictoria() {
+
+  const ganado =
+    piezas.every((pieza, posicion) =>
+      pieza === posicion
+    );
+
+  if (ganado) {
+
+    document.getElementById("mensaje").textContent =
+      "🎉 ¡Puzzle completado!";
+  }
+}
+
+
+function nuevoJuego() {
+
+  piezas = [
+    0, 1, 2,
+    3, 4, 5,
+    6, 7, 8
+  ];
+
+  movimientos = 0;
+
+  document.getElementById("mensaje").textContent = "";
+
+  mezclar();
+}
+
+
+mostrarTablero();
+
+mezclar();
+
+</script>
+
+</body>
+</html>
