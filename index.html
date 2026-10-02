@@ -52,14 +52,25 @@ h1 {
   padding: 4px;
   background: #24152f;
   border-radius: 14px;
+  overflow: hidden;
 }
 
 .pieza {
+  position: relative;
+  overflow: hidden;
   border: none;
   border-radius: 5px;
   padding: 0;
   cursor: pointer;
-  background-repeat: no-repeat;
+  background: #ddd;
+}
+
+.pieza img {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
 }
 
 .vacio {
@@ -129,9 +140,6 @@ let tamaño = 3;
 let piezas = [];
 let movimientos = 0;
 
-
-/* Crear piezas */
-
 function crearPiezas() {
 
   piezas = [];
@@ -142,9 +150,6 @@ function crearPiezas() {
     piezas.push(i);
   }
 }
-
-
-/* Mostrar tablero */
 
 function mostrarTablero() {
 
@@ -167,11 +172,11 @@ function mostrarTablero() {
 
     } else {
 
-      boton.style.backgroundImage =
-        `url("${imgUrl}")`;
+      const imagen = document.createElement("img");
 
-      boton.style.backgroundSize =
-        `${tamaño * 100}% ${tamaño * 100}%`;
+      imagen.src = imgUrl;
+
+      imagen.alt = "Pieza del rompecabezas";
 
       const fila =
         Math.floor(pieza / tamaño);
@@ -179,11 +184,25 @@ function mostrarTablero() {
       const columna =
         pieza % tamaño;
 
-      const posicionImagen =
-        100 / (tamaño - 1);
+      /*
+        La imagen completa se hace del tamaño
+        del tablero multiplicado por el número
+        de piezas.
+      */
 
-      boton.style.backgroundPosition =
-        `${columna * posicionImagen}% ${fila * posicionImagen}%`;
+      imagen.style.width =
+        `${tamaño * 100}%`;
+
+      imagen.style.height =
+        `${tamaño * 100}%`;
+
+      imagen.style.left =
+        `${-columna * 100}%`;
+
+      imagen.style.top =
+        `${-fila * 100}%`;
+
+      boton.appendChild(imagen);
 
       boton.onclick = () => mover(posicion);
     }
@@ -194,9 +213,6 @@ function mostrarTablero() {
   document.getElementById("movimientos").textContent =
     movimientos;
 }
-
-
-/* Mover */
 
 function mover(posicion) {
 
@@ -231,12 +247,13 @@ function mover(posicion) {
   comprobarVictoria();
 }
 
-
-/* Mezclar */
-
 function mezclar() {
 
-  for (let i = 0; i < tamaño * tamaño * 20; i++) {
+  for (
+    let i = 0;
+    i < tamaño * tamaño * 20;
+    i++
+  ) {
 
     const vacio =
       piezas.indexOf(tamaño * tamaño - 1);
@@ -262,7 +279,11 @@ function mezclar() {
       opciones.push(vacio + 1);
 
     const elegido =
-      opciones[Math.floor(Math.random() * opciones.length)];
+      opciones[
+        Math.floor(
+          Math.random() * opciones.length
+        )
+      ];
 
     [piezas[vacio], piezas[elegido]] =
       [piezas[elegido], piezas[vacio]];
@@ -275,26 +296,26 @@ function mezclar() {
   mostrarTablero();
 }
 
-
-/* Victoria */
-
 function comprobarVictoria() {
 
-  if (piezas.every((pieza, posicion) =>
-      pieza === posicion)) {
+  if (
+    piezas.every(
+      (pieza, posicion) =>
+        pieza === posicion
+    )
+  ) {
 
     document.getElementById("mensaje").textContent =
       "🎉 ¡Puzzle completado!";
   }
 }
 
-
-/* Cambiar nivel */
-
 function cambiarNivel() {
 
   tamaño =
-    Number(document.getElementById("nivel").value);
+    Number(
+      document.getElementById("nivel").value
+    );
 
   crearPiezas();
 
@@ -304,9 +325,6 @@ function cambiarNivel() {
 
   mezclar();
 }
-
-
-/* Nuevo juego */
 
 function nuevoJuego() {
 
@@ -318,9 +336,6 @@ function nuevoJuego() {
 
   mezclar();
 }
-
-
-/* Iniciar */
 
 crearPiezas();
 
