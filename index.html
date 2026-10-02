@@ -41,7 +41,6 @@ h1 {
   font-size: 16px;
   background: white;
   color: #24152f;
-  cursor: pointer;
 }
 
 #tablero {
@@ -58,8 +57,8 @@ h1 {
 .pieza {
   border: none;
   border-radius: 5px;
-  cursor: pointer;
   padding: 0;
+  cursor: pointer;
   background-repeat: no-repeat;
 }
 
@@ -78,10 +77,6 @@ button.accion {
   font-size: 16px;
   font-weight: bold;
   cursor: pointer;
-}
-
-button.accion:hover {
-  background: #652e99;
 }
 
 #mensaje {
@@ -111,9 +106,7 @@ button.accion:hover {
 <button class="accion" onclick="mezclar()">🔀 Mezclar</button>
 <button class="accion" onclick="nuevoJuego()">🔄 Nuevo juego</button>
 
-<p>
-  Movimientos: <span id="movimientos">0</span>
-</p>
+<p>Movimientos: <span id="movimientos">0</span></p>
 
 <div id="mensaje"></div>
 
@@ -123,13 +116,13 @@ button.accion:hover {
 
 const tablero = document.getElementById("tablero");
 
-/* IMÁGENES DE CADA NIVEL */
+const BASE = "/Rompecabezas/";
+
 const imagenes = {
-  3: "./fácil.jpeg",
-  4: "./normal.jpeg",
-  5: "./difficil.jpeg",
-  6: "./experto.jpeg"
-};
+  3: BASE + "facil.jpeg",
+  4: BASE + "normal.jpeg",
+  5: BASE + "difficil.jpeg",
+  6: BASE + "experto.jpeg"
 };
 
 let tamaño = 3;
@@ -137,7 +130,7 @@ let piezas = [];
 let movimientos = 0;
 
 
-/* CREAR PIEZAS */
+/* Crear piezas */
 
 function crearPiezas() {
 
@@ -151,7 +144,7 @@ function crearPiezas() {
 }
 
 
-/* MOSTRAR TABLERO */
+/* Mostrar tablero */
 
 function mostrarTablero() {
 
@@ -167,8 +160,6 @@ function mostrarTablero() {
     const boton = document.createElement("button");
 
     boton.className = "pieza";
-
-    /* CASILLA VACÍA */
 
     if (pieza === tamaño * tamaño - 1) {
 
@@ -205,7 +196,7 @@ function mostrarTablero() {
 }
 
 
-/* MOVER PIEZA */
+/* Mover */
 
 function mover(posicion) {
 
@@ -228,9 +219,7 @@ function mover(posicion) {
     Math.abs(fila1 - fila2) +
     Math.abs(columna1 - columna2);
 
-  if (distancia !== 1) {
-    return;
-  }
+  if (distancia !== 1) return;
 
   [piezas[posicion], piezas[vacio]] =
     [piezas[vacio], piezas[posicion]];
@@ -243,14 +232,11 @@ function mover(posicion) {
 }
 
 
-/* MEZCLAR */
+/* Mezclar */
 
 function mezclar() {
 
-  const cantidad =
-    tamaño * tamaño * 20;
-
-  for (let i = 0; i < cantidad; i++) {
+  for (let i = 0; i < tamaño * tamaño * 20; i++) {
 
     const vacio =
       piezas.indexOf(tamaño * tamaño - 1);
@@ -290,13 +276,59 @@ function mezclar() {
 }
 
 
-/* COMPROBAR VICTORIA */
+/* Victoria */
 
 function comprobarVictoria() {
 
-  const ganado =
-    piezas.every((pieza, posicion) =>
-      pieza === posicion
-    );
+  if (piezas.every((pieza, posicion) =>
+      pieza === posicion)) {
 
-  if (ganado
+    document.getElementById("mensaje").textContent =
+      "🎉 ¡Puzzle completado!";
+  }
+}
+
+
+/* Cambiar nivel */
+
+function cambiarNivel() {
+
+  tamaño =
+    Number(document.getElementById("nivel").value);
+
+  crearPiezas();
+
+  movimientos = 0;
+
+  document.getElementById("mensaje").textContent = "";
+
+  mezclar();
+}
+
+
+/* Nuevo juego */
+
+function nuevoJuego() {
+
+  crearPiezas();
+
+  movimientos = 0;
+
+  document.getElementById("mensaje").textContent = "";
+
+  mezclar();
+}
+
+
+/* Iniciar */
+
+crearPiezas();
+
+mostrarTablero();
+
+mezclar();
+
+</script>
+
+</body>
+</html>
