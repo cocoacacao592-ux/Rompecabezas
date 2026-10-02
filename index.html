@@ -121,19 +121,23 @@ Movimientos: <span id="movimientos">0</span>
 
 const tablero = document.getElementById("tablero");
 
+
+/* Imágenes de cada nivel */
+
 const imagenes = {
-  3: "facil.jpg",
-  4: "normal.jpg",
-  5: "dificil.jpg",
-  6: "experto.jpg"
+  3: "Imagen de WhatsApp 2026-10-02 a las 14:15:34.jpeg",
+  4: "Imagen de WhatsApp 2026-10-02 a las 14:15:35.jpeg",
+  5: "Imagen de WhatsApp 2026-10-02 a las 14:15:35 (1).jpeg",
+  6: "Imagen de WhatsApp 2026-10-02 a las 14:15:35 (2).jpeg"
 };
+
 
 let tamaño = 3;
 let piezas = [];
 let movimientos = 0;
 
 
-/* Crear las piezas según el tamaño */
+/* Crear piezas */
 
 function crearPiezas() {
 
@@ -170,18 +174,21 @@ function mostrarTablero() {
     boton.style.backgroundSize =
       `${tamaño * 100}% ${tamaño * 100}%`;
 
-
-    /* Espacio vacío */
+    /* Casilla vacía */
 
     if (pieza === tamaño * tamaño - 1) {
 
       boton.classList.add("vacio");
+
       boton.style.backgroundImage = "none";
 
     } else {
 
-      const fila = Math.floor(pieza / tamaño);
-      const columna = pieza % tamaño;
+      const fila =
+        Math.floor(pieza / tamaño);
+
+      const columna =
+        pieza % tamaño;
 
       const posicionImagen =
         100 / (tamaño - 1);
@@ -200,17 +207,24 @@ function mostrarTablero() {
 }
 
 
-/* Mover una pieza */
+/* Mover pieza */
 
 function mover(posicion) {
 
-  const vacio = piezas.indexOf(tamaño * tamaño - 1);
+  const vacio =
+    piezas.indexOf(tamaño * tamaño - 1);
 
-  const fila1 = Math.floor(posicion / tamaño);
-  const columna1 = posicion % tamaño;
+  const fila1 =
+    Math.floor(posicion / tamaño);
 
-  const fila2 = Math.floor(vacio / tamaño);
-  const columna2 = vacio % tamaño;
+  const columna1 =
+    posicion % tamaño;
+
+  const fila2 =
+    Math.floor(vacio / tamaño);
+
+  const columna2 =
+    vacio % tamaño;
 
   const distancia =
     Math.abs(fila1 - fila2) +
@@ -235,7 +249,8 @@ function mover(posicion) {
 
 function mezclar() {
 
-  const movimientosMezcla = tamaño * tamaño * 20;
+  const movimientosMezcla =
+    tamaño * tamaño * 20;
 
   for (let i = 0; i < movimientosMezcla; i++) {
 
@@ -244,8 +259,11 @@ function mezclar() {
 
     const opciones = [];
 
-    const fila = Math.floor(vacio / tamaño);
-    const columna = vacio % tamaño;
+    const fila =
+      Math.floor(vacio / tamaño);
+
+    const columna =
+      vacio % tamaño;
 
 
     if (fila > 0) {
@@ -266,7 +284,9 @@ function mezclar() {
 
 
     const elegido =
-      opciones[Math.floor(Math.random() * opciones.length)];
+      opciones[
+        Math.floor(Math.random() * opciones.length)
+      ];
 
 
     [piezas[vacio], piezas[elegido]] =
@@ -303,7 +323,9 @@ function comprobarVictoria() {
 function cambiarNivel() {
 
   tamaño =
-    Number(document.getElementById("nivel").value);
+    Number(
+      document.getElementById("nivel").value
+    );
 
   crearPiezas();
 
@@ -329,7 +351,7 @@ function nuevoJuego() {
 }
 
 
-/* Iniciar juego */
+/* Iniciar */
 
 crearPiezas();
 
