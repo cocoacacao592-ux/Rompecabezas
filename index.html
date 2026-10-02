@@ -3,14 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Rompecabezas</title>
-
 <style>
-* {
-  box-sizing: border-box;
-}
-
+* { box-sizing: border-box; }
 body {
   margin: 0;
   min-height: 100vh;
@@ -21,7 +16,6 @@ body {
   background: #f1e6ff;
   color: #24152f;
 }
-
 .contenedor {
   width: min(92vw, 430px);
   padding: 22px;
@@ -30,11 +24,7 @@ body {
   border-radius: 22px;
   box-shadow: 0 8px 30px rgba(0,0,0,0.15);
 }
-
-h1 {
-  margin-top: 0;
-}
-
+h1 { margin-top: 0; }
 #nivel {
   padding: 10px;
   border: 2px solid #7b3fb6;
@@ -44,7 +34,6 @@ h1 {
   color: #24152f;
   cursor: pointer;
 }
-
 #tablero {
   width: min(84vw, 360px);
   aspect-ratio: 1;
@@ -55,7 +44,6 @@ h1 {
   background: #24152f;
   border-radius: 14px;
 }
-
 .pieza {
   border: none;
   border-radius: 5px;
@@ -63,12 +51,10 @@ h1 {
   padding: 0;
   background-repeat: no-repeat;
 }
-
 .vacio {
   background: #e7dcef !important;
   cursor: default;
 }
-
 button.accion {
   padding: 11px 18px;
   margin: 4px;
@@ -80,20 +66,16 @@ button.accion {
   font-weight: bold;
   cursor: pointer;
 }
-
 #mensaje {
   min-height: 25px;
   font-weight: bold;
 }
 </style>
 </head>
-
 <body>
 
 <div class="contenedor">
-
 <h1>🧩 Rompecabezas</h1>
-
 <p>Ordena las piezas para completar la imagen.</p>
 
 <select id="nivel" onchange="cambiarNivel()">
@@ -106,260 +88,114 @@ button.accion {
 <div id="tablero"></div>
 
 <button class="accion" onclick="mezclar()">🔀 Mezclar</button>
-
 <button class="accion" onclick="nuevoJuego()">🔄 Nuevo juego</button>
 
-<p>
-Movimientos: <span id="movimientos">0</span>
-</p>
-
+<p>Movimientos: <span id="movimientos">0</span></p>
 <div id="mensaje"></div>
-
 </div>
 
 <script>
-
 const tablero = document.getElementById("tablero");
 
-
-/* Imágenes de cada nivel */
-
+// ✅ NOMBRES EXACTOS TAL CUAL ESTÁN EN GITHUB
 const imagenes = {
-  3: "Imagen de WhatsApp 2026-10-02 a las 14:15:34.jpeg",
-  4: "Imagen de WhatsApp 2026-10-02 a las 14:15:35.jpeg",
-  5: "Imagen de WhatsApp 2026-10-02 a las 14:15:35 (1).jpeg",
-  6: "Imagen de WhatsApp 2026-10-02 a las 14:15:35 (2).jpeg"
+  3: "WhatsApp Image 2026-10-02 at 2.15.34 PM.jpeg",
+  4: "WhatsApp Image 2026-10-02 at 2.15.35 PM (1).jpeg",
+  5: "WhatsApp Image 2026-10-02 at 2.15.35 PM (2).jpeg",
+  6: "WhatsApp Image 2026-10-02 at 2.15.35 PM.jpeg"
 };
-
 
 let tamaño = 3;
 let piezas = [];
 let movimientos = 0;
 
-
-/* Crear piezas */
-
 function crearPiezas() {
-
   piezas = [];
-
   const total = tamaño * tamaño;
-
-  for (let i = 0; i < total; i++) {
-    piezas.push(i);
-  }
+  for (let i = 0; i < total; i++) piezas.push(i);
 }
-
-
-/* Mostrar tablero */
 
 function mostrarTablero() {
-
   tablero.innerHTML = "";
-
-  tablero.style.gridTemplateColumns =
-    `repeat(${tamaño}, 1fr)`;
+  tablero.style.gridTemplateColumns = `repeat(${tamaño}, 1fr)`;
+  const imgUrl = imagenes[tamaño];
 
   piezas.forEach((pieza, posicion) => {
-
     const boton = document.createElement("button");
-
     boton.className = "pieza";
 
-    /* Imagen correspondiente al nivel */
-
-    boton.style.backgroundImage =
-      `url("${imagenes[tamaño]}")`;
-
-    boton.style.backgroundSize =
-      `${tamaño * 100}% ${tamaño * 100}%`;
-
-    /* Casilla vacía */
-
     if (pieza === tamaño * tamaño - 1) {
-
       boton.classList.add("vacio");
-
-      boton.style.backgroundImage = "none";
-
     } else {
-
-      const fila =
-        Math.floor(pieza / tamaño);
-
-      const columna =
-        pieza % tamaño;
-
-      const posicionImagen =
-        100 / (tamaño - 1);
-
-      boton.style.backgroundPosition =
-        `${columna * posicionImagen}% ${fila * posicionImagen}%`;
-
+      boton.style.backgroundImage = `url("${imgUrl}")`;
+      boton.style.backgroundSize = `${tamaño * 100}% ${tamaño * 100}%`;
+      const fila = Math.floor(pieza / tamaño);
+      const columna = pieza % tamaño;
+      const posicionImagen = 100 / (tamaño - 1);
+      boton.style.backgroundPosition = `${columna * posicionImagen}% ${fila * posicionImagen}%`;
       boton.onclick = () => mover(posicion);
     }
-
     tablero.appendChild(boton);
   });
-
-  document.getElementById("movimientos").textContent =
-    movimientos;
+  document.getElementById("movimientos").textContent = movimientos;
 }
 
-
-/* Mover pieza */
-
 function mover(posicion) {
-
-  const vacio =
-    piezas.indexOf(tamaño * tamaño - 1);
-
-  const fila1 =
-    Math.floor(posicion / tamaño);
-
-  const columna1 =
-    posicion % tamaño;
-
-  const fila2 =
-    Math.floor(vacio / tamaño);
-
-  const columna2 =
-    vacio % tamaño;
-
-  const distancia =
-    Math.abs(fila1 - fila2) +
-    Math.abs(columna1 - columna2);
-
-  if (distancia !== 1) {
-    return;
-  }
-
-  [piezas[posicion], piezas[vacio]] =
-    [piezas[vacio], piezas[posicion]];
-
+  const vacio = piezas.indexOf(tamaño * tamaño - 1);
+  const fila1 = Math.floor(posicion / tamaño);
+  const columna1 = posicion % tamaño;
+  const fila2 = Math.floor(vacio / tamaño);
+  const columna2 = vacio % tamaño;
+  const distancia = Math.abs(fila1 - fila2) + Math.abs(columna1 - columna2);
+  if (distancia !== 1) return;
+  [piezas[posicion], piezas[vacio]] = [piezas[vacio], piezas[posicion]];
   movimientos++;
-
   mostrarTablero();
-
   comprobarVictoria();
 }
 
-
-/* Mezclar */
-
 function mezclar() {
-
-  const movimientosMezcla =
-    tamaño * tamaño * 20;
-
-  for (let i = 0; i < movimientosMezcla; i++) {
-
-    const vacio =
-      piezas.indexOf(tamaño * tamaño - 1);
-
+  for (let i = 0; i < tamaño * tamaño * 20; i++) {
+    const vacio = piezas.indexOf(tamaño * tamaño - 1);
     const opciones = [];
-
-    const fila =
-      Math.floor(vacio / tamaño);
-
-    const columna =
-      vacio % tamaño;
-
-
-    if (fila > 0) {
-      opciones.push(vacio - tamaño);
-    }
-
-    if (fila < tamaño - 1) {
-      opciones.push(vacio + tamaño);
-    }
-
-    if (columna > 0) {
-      opciones.push(vacio - 1);
-    }
-
-    if (columna < tamaño - 1) {
-      opciones.push(vacio + 1);
-    }
-
-
-    const elegido =
-      opciones[
-        Math.floor(Math.random() * opciones.length)
-      ];
-
-
-    [piezas[vacio], piezas[elegido]] =
-      [piezas[elegido], piezas[vacio]];
+    const fila = Math.floor(vacio / tamaño);
+    const columna = vacio % tamaño;
+    if (fila > 0) opciones.push(vacio - tamaño);
+    if (fila < tamaño - 1) opciones.push(vacio + tamaño);
+    if (columna > 0) opciones.push(vacio - 1);
+    if (columna < tamaño - 1) opciones.push(vacio + 1);
+    const elegido = opciones[Math.floor(Math.random() * opciones.length)];
+    [piezas[vacio], piezas[elegido]] = [piezas[elegido], piezas[vacio]];
   }
-
   movimientos = 0;
-
   document.getElementById("mensaje").textContent = "";
-
   mostrarTablero();
 }
 
-
-/* Comprobar victoria */
-
 function comprobarVictoria() {
-
-  const ganado =
-    piezas.every((pieza, posicion) =>
-      pieza === posicion
-    );
-
-  if (ganado) {
-
-    document.getElementById("mensaje").textContent =
-      "🎉 ¡Puzzle completado!";
+  if (piezas.every((p, i) => p === i)) {
+    document.getElementById("mensaje").textContent = "🎉 ¡Puzzle completado!";
   }
 }
 
-
-/* Cambiar nivel */
-
 function cambiarNivel() {
-
-  tamaño =
-    Number(
-      document.getElementById("nivel").value
-    );
-
+  tamaño = Number(document.getElementById("nivel").value);
   crearPiezas();
-
   movimientos = 0;
-
   document.getElementById("mensaje").textContent = "";
-
   mezclar();
 }
-
-
-/* Nuevo juego */
 
 function nuevoJuego() {
-
   crearPiezas();
-
   movimientos = 0;
-
   document.getElementById("mensaje").textContent = "";
-
   mezclar();
 }
 
-
-/* Iniciar */
-
 crearPiezas();
-
 mostrarTablero();
-
 mezclar();
-
 </script>
-
 </body>
 </html>
