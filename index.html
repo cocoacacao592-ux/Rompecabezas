@@ -35,13 +35,22 @@ h1 {
   margin-top: 0;
 }
 
+#nivel {
+  padding: 10px;
+  border: 2px solid #7b3fb6;
+  border-radius: 10px;
+  font-size: 16px;
+  background: white;
+  color: #24152f;
+  cursor: pointer;
+}
+
 #tablero {
   width: min(84vw, 360px);
   aspect-ratio: 1;
   margin: 20px auto;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 4px;
+  gap: 3px;
   padding: 4px;
   background: #24152f;
   border-radius: 14px;
@@ -49,18 +58,18 @@ h1 {
 
 .pieza {
   border: none;
-  border-radius: 7px;
+  border-radius: 5px;
   cursor: pointer;
-  background-image: url("https://dummyimage.com/900x900/9b59b6/ffffff&text=TU+IMAGEN");
-  background-size: 300% 300%;
+  padding: 0;
+  background-repeat: no-repeat;
 }
 
 .vacio {
-  background: #e7dcef;
+  background: #e7dcef !important;
   cursor: default;
 }
 
-button {
+button.accion {
   padding: 11px 18px;
   margin: 4px;
   border: none;
@@ -87,11 +96,18 @@ button {
 
 <p>Ordena las piezas para completar la imagen.</p>
 
+<select id="nivel" onchange="cambiarNivel()">
+  <option value="3">🟢 Fácil - 3×3</option>
+  <option value="4">🟡 Normal - 4×4</option>
+  <option value="5">🟠 Difícil - 5×5</option>
+  <option value="6">🔴 Experto - 6×6</option>
+</select>
+
 <div id="tablero"></div>
 
-<button onclick="mezclar()">🔀 Mezclar</button>
+<button class="accion" onclick="mezclar()">🔀 Mezclar</button>
 
-<button onclick="nuevoJuego()">🔄 Nuevo juego</button>
+<button class="accion" onclick="nuevoJuego()">🔄 Nuevo juego</button>
 
 <p>
 Movimientos: <span id="movimientos">0</span>
@@ -105,17 +121,40 @@ Movimientos: <span id="movimientos">0</span>
 
 const tablero = document.getElementById("tablero");
 
-let piezas = [
-  0, 1, 2,
-  3, 4, 5,
-  6, 7, 8
-];
+const imagenes = {
+  3: "facil.jpg",
+  4: "normal.jpg",
+  5: "dificil.jpg",
+  6: "experto.jpg"
+};
 
+let tamaño = 3;
+let piezas = [];
 let movimientos = 0;
+
+
+/* Crear las piezas según el tamaño */
+
+function crearPiezas() {
+
+  piezas = [];
+
+  const total = tamaño * tamaño;
+
+  for (let i = 0; i < total; i++) {
+    piezas.push(i);
+  }
+}
+
+
+/* Mostrar tablero */
 
 function mostrarTablero() {
 
   tablero.innerHTML = "";
+
+  tablero.style.gridTemplateColumns =
+    `repeat(${tamaño}, 1fr)`;
 
   piezas.forEach((pieza, posicion) => {
 
@@ -123,20 +162,35 @@ function mostrarTablero() {
 
     boton.className = "pieza";
 
-    if (pieza === 8) {
+    /* Imagen correspondiente al nivel */
+
+    boton.style.backgroundImage =
+      `url("${imagenes[tamaño]}")`;
+
+    boton.style.backgroundSize =
+      `${tamaño * 100}% ${tamaño * 100}%`;
+
+
+    /* Espacio vacío */
+
+    if (pieza === tamaño * tamaño - 1) {
 
       boton.classList.add("vacio");
+      boton.style.backgroundImage = "none";
 
     } else {
 
-      const fila = Math.floor(pieza / 3);
-      const columna = pieza % 3;
+      const fila = Math.floor(pieza / tamaño);
+      const columna = pieza % tamaño;
+
+      const posicionImagen =
+        100 / (tamaño - 1);
 
       boton.style.backgroundPosition =
-        `${columna * 50}% ${fila * 50}%`;
-    }
+        `${columna * posicionImagen}% ${fila * posicionImagen}%`;
 
-    boton.onclick = () => mover(posicion);
+      boton.onclick = () => mover(posicion);
+    }
 
     tablero.appendChild(boton);
   });
@@ -146,15 +200,17 @@ function mostrarTablero() {
 }
 
 
+/* Mover una pieza */
+
 function mover(posicion) {
 
-  const vacio = piezas.indexOf(8);
+  const vacio = piezas.indexOf(tamaño * tamaño - 1);
 
-  const fila1 = Math.floor(posicion / 3);
-  const columna1 = posicion % 3;
+  const fila1 = Math.floor(posicion / tamaño);
+  const columna1 = posicion % tamaño;
 
-  const fila2 = Math.floor(vacio / 3);
-  const columna2 = vacio % 3;
+  const fila2 = Math.floor(vacio / tamaño);
+  const columna2 = vacio % tamaño;
 
   const distancia =
     Math.abs(fila1 - fila2) +
@@ -165,7 +221,7 @@ function mover(posicion) {
   }
 
   [piezas[posicion], piezas[vacio]] =
-  [piezas[vacio], piezas[posicion]];
+    [piezas[vacio], piezas[posicion]];
 
   movimientos++;
 
@@ -175,34 +231,46 @@ function mover(posicion) {
 }
 
 
+/* Mezclar */
+
 function mezclar() {
 
-  for (let i = 0; i < 100; i++) {
+  const movimientosMezcla = tamaño * tamaño * 20;
 
-    const vacio = piezas.indexOf(8);
+  for (let i = 0; i < movimientosMezcla; i++) {
+
+    const vacio =
+      piezas.indexOf(tamaño * tamaño - 1);
 
     const opciones = [];
 
-    const fila = Math.floor(vacio / 3);
-    const columna = vacio % 3;
+    const fila = Math.floor(vacio / tamaño);
+    const columna = vacio % tamaño;
 
-    if (fila > 0)
-      opciones.push(vacio - 3);
 
-    if (fila < 2)
-      opciones.push(vacio + 3);
+    if (fila > 0) {
+      opciones.push(vacio - tamaño);
+    }
 
-    if (columna > 0)
+    if (fila < tamaño - 1) {
+      opciones.push(vacio + tamaño);
+    }
+
+    if (columna > 0) {
       opciones.push(vacio - 1);
+    }
 
-    if (columna < 2)
+    if (columna < tamaño - 1) {
       opciones.push(vacio + 1);
+    }
+
 
     const elegido =
       opciones[Math.floor(Math.random() * opciones.length)];
 
+
     [piezas[vacio], piezas[elegido]] =
-    [piezas[elegido], piezas[vacio]];
+      [piezas[elegido], piezas[vacio]];
   }
 
   movimientos = 0;
@@ -212,6 +280,8 @@ function mezclar() {
   mostrarTablero();
 }
 
+
+/* Comprobar victoria */
 
 function comprobarVictoria() {
 
@@ -228,13 +298,14 @@ function comprobarVictoria() {
 }
 
 
-function nuevoJuego() {
+/* Cambiar nivel */
 
-  piezas = [
-    0, 1, 2,
-    3, 4, 5,
-    6, 7, 8
-  ];
+function cambiarNivel() {
+
+  tamaño =
+    Number(document.getElementById("nivel").value);
+
+  crearPiezas();
 
   movimientos = 0;
 
@@ -243,6 +314,24 @@ function nuevoJuego() {
   mezclar();
 }
 
+
+/* Nuevo juego */
+
+function nuevoJuego() {
+
+  crearPiezas();
+
+  movimientos = 0;
+
+  document.getElementById("mensaje").textContent = "";
+
+  mezclar();
+}
+
+
+/* Iniciar juego */
+
+crearPiezas();
 
 mostrarTablero();
 
