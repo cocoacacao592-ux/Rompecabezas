@@ -123,12 +123,12 @@ button.accion:hover {
 
 const tablero = document.getElementById("tablero");
 
-/* IMAGEN DE CADA NIVEL */
+/* IMÁGENES DE CADA NIVEL */
 const imagenes = {
-  1: "fácil.jpeg",
-  2: "normal.jpeg",
-  3: "difficil.jpeg",
-  4: "experto.jpeg"
+  3: "fácil.jpeg",
+  4: "normal.jpeg",
+  5: "difficil.jpeg",
+  6: "experto.jpeg"
 };
 
 let tamaño = 3;
@@ -174,8 +174,6 @@ function mostrarTablero() {
       boton.classList.add("vacio");
 
     } else {
-
-      /* IMAGEN DEL NIVEL */
 
       boton.style.backgroundImage =
         `url("${imgUrl}")`;
@@ -264,29 +262,20 @@ function mezclar() {
     const columna =
       vacio % tamaño;
 
-
-    if (fila > 0) {
+    if (fila > 0)
       opciones.push(vacio - tamaño);
-    }
 
-    if (fila < tamaño - 1) {
+    if (fila < tamaño - 1)
       opciones.push(vacio + tamaño);
-    }
 
-    if (columna > 0) {
+    if (columna > 0)
       opciones.push(vacio - 1);
-    }
 
-    if (columna < tamaño - 1) {
+    if (columna < tamaño - 1)
       opciones.push(vacio + 1);
-    }
-
 
     const elegido =
-      opciones[
-        Math.floor(Math.random() * opciones.length)
-      ];
-
+      opciones[Math.floor(Math.random() * opciones.length)];
 
     [piezas[vacio], piezas[elegido]] =
       [piezas[elegido], piezas[vacio]];
@@ -309,37 +298,4 @@ function comprobarVictoria() {
       pieza === posicion
     );
 
-  if (ganado) {
-
-    document.getElementById("mensaje").textContent =
-      "🎉 ¡Puzzle completado!";
-  }
-}
-
-
-/* CAMBIAR NIVEL */
-
-function cambiarNivel() {
-
-  tamaño =
-    Number(document.getElementById("nivel").value);
-
-  crearPiezas();
-
-  movimientos = 0;
-
-  document.getElementById("mensaje").textContent = "";
-
-  mezclar();
-}
-
-
-/* NUEVO JUEGO */
-
-function nuevoJuego() {
-
-  crearPiezas();
-
-  movimientos = 0;
-
-  document.getElementById("
+  if (ganado
